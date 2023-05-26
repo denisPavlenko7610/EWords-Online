@@ -3,12 +3,12 @@ using Cysharp.Threading.Tasks;
 
 namespace EWords
 {
-    //using SimpleJSON;
+    using SimpleJSON;
     using UnityEngine;
 
     public class Translate
     {
-        private string translatedText = "";
+        string _translatedText = "";
 
         public async UniTask<string> Process(string targetLang, string sourceText)
         {
@@ -23,9 +23,9 @@ namespace EWords
             {
                 if (string.IsNullOrEmpty(www.error))
                 {
-                    //var N = JSONNode.Parse(www.text);
-                    //translatedText = N[0][0][0];
-                    return translatedText;
+                    var jsonNode = JSONNode.Parse(www.text);
+                    _translatedText = jsonNode[0][0][0];
+                    return _translatedText;
                 }
             }
 
@@ -44,9 +44,9 @@ namespace EWords
             {
                 if (string.IsNullOrEmpty(www.error))
                 {
-                    //var N = JSONNode.Parse(www.text);
-                    //translatedText = N[0][0][0];
-                    return translatedText;
+                    var jsonNode = JSONNode.Parse(www.text);
+                    _translatedText = jsonNode[0][0][0];
+                    return _translatedText;
                 }
             }
             

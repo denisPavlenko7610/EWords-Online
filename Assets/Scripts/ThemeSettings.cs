@@ -7,8 +7,6 @@ namespace EWords
     public class ThemeSettings : MonoBehaviour
     {
         [SerializeField] TextMeshProUGUI mainText;
-        [SerializeField] TextMeshProUGUI wordsLeftText;
-        [SerializeField] TextMeshProUGUI finishText;
         [SerializeField] TextMeshProUGUI translatedText;
         [SerializeField] Color blackColor;
         [SerializeField] Color whiteColor;
@@ -16,23 +14,23 @@ namespace EWords
         [SerializeField] Image arrowImage;
         [SerializeField] Button switchThemeButton;
 
-        Theme theme = Theme.Black;
-        private LoadAndSave loadAndSave;
+        Theme _theme = Theme.Black;
+        LoadAndSave _loadAndSave;
 
-        private void OnEnable()
+        void OnEnable()
         {
             switchThemeButton.onClick.AddListener(SwitchTheme);
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
             switchThemeButton.onClick.RemoveListener(SwitchTheme);
         }
 
-        private void Start()
+        void Start()
         {
-            loadAndSave = new LoadAndSave();
-            theme = loadAndSave.LoadThemeSettings();
+            _loadAndSave = new LoadAndSave();
+            _theme = _loadAndSave.LoadThemeSettings();
             SetTheme();
         }
 
@@ -40,7 +38,7 @@ namespace EWords
         {
             Color buttonTextColor;
             Color textColor;
-            if (theme == Theme.Black)
+            if (_theme == Theme.Black)
             {
                 buttonTextColor = whiteColor;
                 textColor = blackColor;
@@ -55,22 +53,19 @@ namespace EWords
                 buttonTextColor = blackColor;
             }
 
-            finishText.color = textColor;
             translatedText.color = textColor;
             backgroundImage.color = buttonTextColor;
             mainText.color = textColor;
-            wordsLeftText.color = textColor;
         }
         
         void SwitchTheme()
         {
-            if (theme == Theme.Black)
-                theme = Theme.White;
-            else
-                theme = Theme.Black;
+            _theme = _theme == Theme.Black 
+                ? Theme.White 
+                : Theme.Black;
 
             SetTheme();
-            loadAndSave.SaveThemeSettings(theme);
+            _loadAndSave.SaveThemeSettings(_theme);
         }
     }
 }

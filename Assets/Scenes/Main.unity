@@ -1261,7 +1261,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1532009574
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1741,8 +1741,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainText: {fileID: 1457577537}
-  wordsLeftText: {fileID: 0}
-  finishText: {fileID: 0}
   translatedText: {fileID: 1632028079}
   blackColor: {r: 0.2627451, g: 0.2627451, b: 0.2627451, a: 1}
   whiteColor: {r: 1, g: 1, b: 1, a: 1}

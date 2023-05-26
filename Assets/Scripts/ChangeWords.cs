@@ -20,12 +20,12 @@ namespace EWords
         [SerializeField] Button learnButton;
         [SerializeField] Button knowButton;
 
-        List<string> words = new();
-        List<string> learnedWords = new();
-        int currentNumber = -1;
-        int countBeforeHideFinishText = 2;
-        LoadAndSave loadAndSave;
-        Translate translate;
+        List<string> _words = new();
+        List<string> _learnedWords = new();
+        int _currentNumber = -1;
+        int _countBeforeHideFinishText = 2;
+        LoadAndSave _loadAndSave;
+        Translate _translate;
         public string CurrentWord { get; private set; }
         public string TranslatedWord { get; private set; }
 
@@ -37,11 +37,11 @@ namespace EWords
 
         void Init()
         {
-            translate = new Translate();
-            loadAndSave = new LoadAndSave();
-            learnedWords = loadAndSave.LoadLearnedWords(Application.persistentDataPath);
+            _translate = new Translate();
+            _loadAndSave = new LoadAndSave();
+            _learnedWords = _loadAndSave.LoadLearnedWords(Application.persistentDataPath);
             finishText.enabled = false;
-            words = loadAndSave.LoadWords();
+            _words = _loadAndSave.LoadWords();
             RemoveLearnedWords();
             Subscribe();
             ShowWordsLeft();
@@ -49,25 +49,25 @@ namespace EWords
 
         async void ChangeCulture() => await GetTranslatedText(CurrentWord);
 
-        void ShowWordsLeft() => wordsLeftText.text = $"{words.Count} words left";
+        void ShowWordsLeft() => wordsLeftText.text = $"{_words.Count} words left";
 
         async UniTask ShowWord()
         {
-            var randomNumber = Utils.GetRandomNumber(words);
-            while (currentNumber == randomNumber && words.Count > 1)
-                randomNumber = Utils.GetRandomNumber(words);
+            var randomNumber = Utils.GetRandomNumber(_words);
+            while (_currentNumber == randomNumber && _words.Count > 1)
+                randomNumber = Utils.GetRandomNumber(_words);
 
-            currentNumber = randomNumber;
-            CurrentWord = words[randomNumber];
+            _currentNumber = randomNumber;
+            CurrentWord = _words[randomNumber];
             mainText.text = CurrentWord;
-            mainImage.sprite = Resources.Load<Sprite>(words[randomNumber]);
+            mainImage.sprite = Resources.Load<Sprite>(_words[randomNumber]);
             await GetTranslatedText(CurrentWord);
             CheckToHideFinishText();
         }
 
         async Task GetTranslatedText(string word)
         {
-            var text = await translate.Process("En", word);
+            var text = await _translate.Process("En", word);
             TranslatedWord = text;
             translatedText.text = "...";
             translatedText.text = Utils.ToUpperFirstChar(text);
@@ -76,9 +76,9 @@ namespace EWords
         private void CheckToHideFinishText()
         {
             if (finishText.isActiveAndEnabled)
-                countBeforeHideFinishText--;
+                _countBeforeHideFinishText--;
 
-            if (countBeforeHideFinishText == 0)
+            if (_countBeforeHideFinishText == 0)
                 finishText.enabled = false;
         }
 
@@ -90,27 +90,27 @@ namespace EWords
 
         void Know()
         {
-            var removed = words[currentNumber];
-            words.Remove(removed);
-            learnedWords.Add(removed);
-            if (words.Count == 0)
+            var removed = _words[_currentNumber];
+            _words.Remove(removed);
+            _learnedWords.Add(removed);
+            if (_words.Count == 0)
                 ResetWords();
 
             ShowWordsLeft();
             ShowWord();
-            loadAndSave.SaveLearnedWords(Application.persistentDataPath, learnedWords);
+            _loadAndSave.SaveLearnedWords(Application.persistentDataPath, _learnedWords);
         }
 
         void RemoveLearnedWords()
         {
-            if (learnedWords.Count != words.Count)
-                words = words.Except(learnedWords).ToList();
+            if (_learnedWords.Count != _words.Count)
+                _words = _words.Except(_learnedWords).ToList();
         }
 
         void ResetWords()
         {
-            learnedWords.Clear();
-            words = loadAndSave.LoadWords();
+            _learnedWords.Clear();
+            _words = _loadAndSave.LoadWords();
             finishText.enabled = true;
         }
 
@@ -129,13 +129,13 @@ namespace EWords
         void OnDisable()
         {
             Unsubscribe();
-            loadAndSave.SaveLearnedWords(Application.persistentDataPath, learnedWords);
+            _loadAndSave.SaveLearnedWords(Application.persistentDataPath, _learnedWords);
         }
 
         void OnDestroy()
         {
             Unsubscribe();
-            loadAndSave.SaveLearnedWords(Application.persistentDataPath, learnedWords);
+            _loadAndSave.SaveLearnedWords(Application.persistentDataPath, _learnedWords);
         }
     }
 }

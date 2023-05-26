@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Cysharp.Threading.Tasks;
-using EWords;
+﻿using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,19 +12,19 @@ namespace EWords
         [SerializeField] Button speakerButtonTranslate;
         [SerializeField] ChangeWords changeWords;
 
-        private void OnEnable()
+        void OnEnable()
         {
             speakerButtonNative.onClick.AddListener(PlayNative);
             speakerButtonTranslate.onClick.AddListener(PlayTranslate);
         }
 
-        private void OnDisable()
+        void OnDisable()
         {
             speakerButtonNative.onClick.RemoveListener(PlayNative);
             speakerButtonTranslate.onClick.RemoveListener(PlayTranslate);
         }
 
-        private void OnValidate()
+        void OnValidate()
         {
             if (!audioSource)
                 audioSource = GetComponent<AudioSource>();
@@ -35,17 +33,17 @@ namespace EWords
                 changeWords = GetComponent<ChangeWords>();
         }
 
-        private void PlayNative()
+        void PlayNative()
         {
             Process("En", changeWords.CurrentWord);
         }
 
-        private void PlayTranslate()
+        void PlayTranslate()
         {
             Process("En", changeWords.TranslatedWord);
         }
 
-        private async UniTask Process(string targetLang, string sourceText)
+        async UniTask Process(string targetLang, string sourceText)
         {
             var url = "https://translate.google.com.vn/translate_tts?/ie=UTF-8&q=" + WWW.EscapeURL(sourceText)
                 + "&tl=" + targetLang + "&client=tw-ob";

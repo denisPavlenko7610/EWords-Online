@@ -9,7 +9,7 @@ namespace EWords
 {
     public class LoadAndSave
     {
-        string themeKey = "Theme";
+        const string ThemeKey = "Theme";
 
         public List<string> LoadWords()
         {
@@ -51,9 +51,9 @@ namespace EWords
         public Theme LoadThemeSettings()
         {
             var theme = Theme.Black;
-            if (PlayerPrefs.HasKey(themeKey))
+            if (PlayerPrefs.HasKey(ThemeKey))
             {
-                var themeInSettings = PlayerPrefs.GetString(themeKey);
+                var themeInSettings = PlayerPrefs.GetString(ThemeKey);
                 if (themeInSettings == Theme.Black.ToString())
                 {
                     theme = Theme.Black;
@@ -69,7 +69,7 @@ namespace EWords
 
         public void SaveThemeSettings(Theme theme)
         {
-            PlayerPrefs.SetString(themeKey, theme.ToString());
+            PlayerPrefs.SetString(ThemeKey, theme.ToString());
         }
     }
 }
