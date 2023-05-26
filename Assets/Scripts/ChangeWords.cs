@@ -56,7 +56,14 @@ namespace EWords
             _currentNumber = randomNumber;
             CurrentWord = _words[randomNumber];
             mainText.text = CurrentWord;
-            mainImage.sprite = await _imageSearcher.LoadImage();
+            Material material = new Material(Shader.Find("UI/Unlit/Transparent"));
+            Texture2D texture = await _imageSearcher.LoadImage();
+            material.SetTexture("_MainTex", texture);
+            mainImage.material = material;
+            Sprite sprite = Sprite.Create(texture, new Rect(0,0, texture.width, texture.height), new Vector2(.5f,.5f), 100);
+            mainImage.sprite = sprite;
+
+            mainImage.preserveAspect = true;
             await GetTranslatedText(CurrentWord);
         }
 

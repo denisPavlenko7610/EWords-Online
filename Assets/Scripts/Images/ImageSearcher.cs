@@ -8,9 +8,9 @@ namespace EWords.Images
 {
     public class ImageSearcher
     {
-        public string keyword = "apple";
+        public string keyword = "dog.png";
 
-        public async Task<Sprite> LoadImage()
+        public async Task<Texture2D> LoadImage()
         {
             string imageUrl = await GetImageLink(keyword);
 
@@ -18,12 +18,11 @@ namespace EWords.Images
             {
                 byte[] imageData = await DownloadImage(imageUrl);
 
-                Texture2D texture = new Texture2D(2, 2);
+                Texture2D texture = new Texture2D(512, 512, TextureFormat.RGBA32, false);
                 texture.LoadImage(imageData);
-
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
-
-                return sprite;
+                texture.alphaIsTransparency = true;
+                
+                return texture;
             }
             
             Debug.Log("No image found on the page.");
@@ -32,7 +31,7 @@ namespace EWords.Images
 
         async Task<string> GetImageLink(string keyword)
         {
-            string url = $"https://www.google.com/search?q={Uri.EscapeDataString(keyword)}&tbm=isch";
+            string url = $"https://www.google.com/search?q={Uri.EscapeDataString(keyword)}&tbm=isch&tbs=ic:trans";
             using UnityWebRequest www = UnityWebRequest.Get(url);
             await www.SendWebRequest();
 
