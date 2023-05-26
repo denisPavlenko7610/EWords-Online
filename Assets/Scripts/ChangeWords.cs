@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
+using EWords.Images;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,8 +13,6 @@ namespace EWords
     public class ChangeWords : MonoBehaviour
     {
         [SerializeField] TextMeshProUGUI mainText;
-        [SerializeField] TextMeshProUGUI wordsLeftText;
-        [SerializeField] TextMeshProUGUI finishText;
         [SerializeField] TextMeshProUGUI translatedText;
         [SerializeField] Image mainImage;
         [SerializeField] Button learnButton;
@@ -23,15 +21,17 @@ namespace EWords
         List<string> _words = new();
         List<string> _learnedWords = new();
         int _currentNumber = -1;
-        int _countBeforeHideFinishText = 2;
         LoadAndSave _loadAndSave;
         Translate _translate;
+        ImageSearcher _imageSearcher;
         public string CurrentWord { get; private set; }
         public string TranslatedWord { get; private set; }
 
         async void Start()
         {
             Init();
+            
+            _imageSearcher = new ImageSearcher();
             await ShowWord();
         }
 
@@ -40,18 +40,14 @@ namespace EWords
             _translate = new Translate();
             _loadAndSave = new LoadAndSave();
             _learnedWords = _loadAndSave.LoadLearnedWords(Application.persistentDataPath);
-            finishText.enabled = false;
             _words = _loadAndSave.LoadWords();
             RemoveLearnedWords();
             Subscribe();
-            ShowWordsLeft();
         }
 
         async void ChangeCulture() => await GetTranslatedText(CurrentWord);
 
-        void ShowWordsLeft() => wordsLeftText.text = $"{_words.Count} words left";
-
-        async UniTask ShowWord()
+        async Task ShowWord()
         {
             var randomNumber = Utils.GetRandomNumber(_words);
             while (_currentNumber == randomNumber && _words.Count > 1)
@@ -60,35 +56,25 @@ namespace EWords
             _currentNumber = randomNumber;
             CurrentWord = _words[randomNumber];
             mainText.text = CurrentWord;
-            mainImage.sprite = Resources.Load<Sprite>(_words[randomNumber]);
+            mainImage.sprite = await _imageSearcher.LoadImage();
             await GetTranslatedText(CurrentWord);
-            CheckToHideFinishText();
         }
 
         async Task GetTranslatedText(string word)
         {
-            var text = await _translate.Process("En", word);
+            var text = await _translate.Process("Ru", word);
             TranslatedWord = text;
             translatedText.text = "...";
             translatedText.text = Utils.ToUpperFirstChar(text);
         }
 
-        private void CheckToHideFinishText()
-        {
-            if (finishText.isActiveAndEnabled)
-                _countBeforeHideFinishText--;
 
-            if (_countBeforeHideFinishText == 0)
-                finishText.enabled = false;
+        async Task Learn()
+        {
+            await ShowWord();
         }
 
-
-        void Learn()
-        {
-            ShowWord();
-        }
-
-        void Know()
+        async Task Know()
         {
             var removed = _words[_currentNumber];
             _words.Remove(removed);
@@ -96,8 +82,7 @@ namespace EWords
             if (_words.Count == 0)
                 ResetWords();
 
-            ShowWordsLeft();
-            ShowWord();
+            await ShowWord();
             _loadAndSave.SaveLearnedWords(Application.persistentDataPath, _learnedWords);
         }
 
@@ -111,19 +96,21 @@ namespace EWords
         {
             _learnedWords.Clear();
             _words = _loadAndSave.LoadWords();
-            finishText.enabled = true;
         }
 
         void Subscribe()
         {
-            learnButton.onClick.AddListener(Learn);
-            knowButton.onClick.AddListener(Know);
+            learnButton.onClick.AddListener(LearnSubscribe);
+            knowButton.onClick.AddListener(KnowSubscribe);
         }
+        async void LearnSubscribe() => await Learn();
+
+        async void KnowSubscribe() => await Know();
 
         void Unsubscribe()
         {
-            learnButton.onClick.RemoveListener(Learn);
-            knowButton.onClick.RemoveListener(Know);
+            learnButton.onClick.RemoveListener(LearnSubscribe);
+            knowButton.onClick.RemoveListener(KnowSubscribe);
         }
 
         void OnDisable()

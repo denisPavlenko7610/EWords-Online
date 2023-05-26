@@ -11,7 +11,6 @@ namespace EWords
         [SerializeField] Color blackColor;
         [SerializeField] Color whiteColor;
         [SerializeField] Image backgroundImage;
-        [SerializeField] Image arrowImage;
         [SerializeField] Button switchThemeButton;
 
         Theme _theme = Theme.Black;
@@ -43,12 +42,10 @@ namespace EWords
                 buttonTextColor = whiteColor;
                 textColor = blackColor;
                 switchThemeButton.image.sprite = Resources.Load<Sprite>("Tools/SunBlack");
-                arrowImage.sprite = Resources.Load<Sprite>("Tools/ArrowWhite");
             }
             else
             {
                 switchThemeButton.image.sprite = Resources.Load<Sprite>("Tools/SunWhite");;
-                arrowImage.sprite = Resources.Load<Sprite>("Tools/ArrowBlack");;
                 textColor = whiteColor;
                 buttonTextColor = blackColor;
             }
