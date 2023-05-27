@@ -9,19 +9,16 @@ namespace EWords
     {
         [SerializeField] AudioSource audioSource;
         [SerializeField] Button speakerButtonNative;
-        [SerializeField] Button speakerButtonTranslate;
         [SerializeField] ChangeWords changeWords;
 
         void OnEnable()
         {
             speakerButtonNative.onClick.AddListener(PlayNative);
-            speakerButtonTranslate.onClick.AddListener(PlayTranslate);
         }
 
         void OnDisable()
         {
             speakerButtonNative.onClick.RemoveListener(PlayNative);
-            speakerButtonTranslate.onClick.RemoveListener(PlayTranslate);
         }
 
         void OnValidate()
@@ -36,11 +33,6 @@ namespace EWords
         void PlayNative()
         {
             Process("En", changeWords.CurrentWord);
-        }
-
-        void PlayTranslate()
-        {
-            Process("En", changeWords.TranslatedWord);
         }
 
         async UniTask Process(string targetLang, string sourceText)

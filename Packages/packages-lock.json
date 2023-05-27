@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.rdragon.extensions": {
+      "version": "https://github.com/denisPavlenko7610/RDExtensions.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "fac425f4b476a60f4c0bd32cbaa957aa57a9e70b"
+    },
     "com.unity.2d.animation": {
       "version": "9.0.2",
       "depth": 1,

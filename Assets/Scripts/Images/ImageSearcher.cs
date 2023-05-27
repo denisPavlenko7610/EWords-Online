@@ -8,11 +8,12 @@ namespace EWords.Images
 {
     public class ImageSearcher
     {
-        public string keyword = "dog.png";
+        string _keyword;
 
-        public async Task<Texture2D> LoadImage()
+        public async Task<Sprite> LoadImage(string name)
         {
-            string imageUrl = await GetImageLink(keyword);
+            _keyword = name;
+            string imageUrl = await GetImageLink(_keyword);
 
             if (!string.IsNullOrEmpty(imageUrl))
             {
@@ -22,7 +23,8 @@ namespace EWords.Images
                 texture.LoadImage(imageData);
                 texture.alphaIsTransparency = true;
                 
-                return texture;
+                Sprite sprite = Sprite.Create(texture, new Rect(0,0, texture.width, texture.height), new Vector2(.5f,.5f), 100);
+                return sprite;
             }
             
             Debug.Log("No image found on the page.");

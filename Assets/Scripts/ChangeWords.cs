@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EWords.Images;
+using RDExtensions.Extensions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -56,14 +57,9 @@ namespace EWords
             _currentNumber = randomNumber;
             CurrentWord = _words[randomNumber];
             mainText.text = CurrentWord;
-            Material material = new Material(Shader.Find("UI/Unlit/Transparent"));
-            Texture2D texture = await _imageSearcher.LoadImage();
-            material.SetTexture("_MainTex", texture);
-            mainImage.material = material;
-            Sprite sprite = Sprite.Create(texture, new Rect(0,0, texture.width, texture.height), new Vector2(.5f,.5f), 100);
-            mainImage.sprite = sprite;
-
+            mainImage.sprite = await _imageSearcher.LoadImage(CurrentWord);
             mainImage.preserveAspect = true;
+            
             await GetTranslatedText(CurrentWord);
         }
 
@@ -72,9 +68,8 @@ namespace EWords
             var text = await _translate.Process("Ru", word);
             TranslatedWord = text;
             translatedText.text = "...";
-            translatedText.text = Utils.ToUpperFirstChar(text);
+            translatedText.text = text.ToUpperFirstChar();
         }
-
 
         async Task Learn()
         {
