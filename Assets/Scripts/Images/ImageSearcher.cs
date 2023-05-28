@@ -126,14 +126,14 @@ namespace EWords.Images
             return null;
         }
 
-        [System.Serializable]
-        private class GoogleImagesResponse
+        [Serializable]
+        class GoogleImagesResponse
         {
             public ImageItem[] items;
         }
 
-        [System.Serializable]
-        private class ImageItem
+        [Serializable]
+        class ImageItem
         {
             public string link;
         }

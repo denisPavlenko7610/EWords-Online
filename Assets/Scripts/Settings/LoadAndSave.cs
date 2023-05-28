@@ -7,13 +7,13 @@ namespace EWords
     public class LoadAndSave
     {
         const string ThemeKey = "Theme";
-        const string Path = "Text/Words";
+        const string _path = "Text/Words";
         const string LearnedPath = "Text/LearnedWords";
 
         public List<string> LoadWords()
         {
             List<string> words = new();
-            TextAsset text = Resources.Load<TextAsset>(Path);
+            TextAsset text = Resources.Load<TextAsset>(_path);
             if (text == null)
             {                
                 Debug.LogError("File not found");
@@ -27,7 +27,7 @@ namespace EWords
 
             return words.Shuffle();
         }
-        public async void SaveWords(List<string> words) => await File.WriteAllLinesAsync($"{Application.dataPath}/Resources/{Path}.txt", words);
+        public async void SaveWords(List<string> words) => await File.WriteAllLinesAsync(Constants.Path, words);
 
         public async void SaveLearnedWords(string learnedWord)
         {
@@ -36,7 +36,7 @@ namespace EWords
             
             List<string> list = new();
             list.Add(learnedWord);
-            await File.AppendAllLinesAsync($"{Application.dataPath}/Resources/{LearnedPath}.txt", list);
+            await File.AppendAllLinesAsync(Constants.LearnedPath, list);
         }
 
         public List<string> LoadLearnedWords()
