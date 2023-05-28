@@ -33,7 +33,7 @@ namespace EWords.Images
 
         async Task<string> GetImageLink(string keyword)
         {
-            string url = $"https://www.google.com/search?q={Uri.EscapeDataString(keyword)}&tbm=isch&tbs=ic:trans";
+            string url = $"https://www.google.com/search?q={Uri.EscapeDataString(keyword)}&tbm=isch&tbs=ic:trans&safe=active";
             using UnityWebRequest www = UnityWebRequest.Get(url);
             await www.SendWebRequest();
 

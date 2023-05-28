@@ -116,7 +116,11 @@ namespace EWords
             
             CurrentWord = _words[randomNumber];
             mainText.text = CurrentWord;
-            mainImage.sprite = await _imageSearcher.LoadImage(CurrentWord);
+            Sprite image = await _imageSearcher.LoadImage(CurrentWord);
+            if(!image)
+                return;
+
+            mainImage.sprite = image;
             mainImage.preserveAspect = true;
             
             await GetTranslatedText(CurrentWord);

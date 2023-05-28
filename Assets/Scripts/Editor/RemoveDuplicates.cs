@@ -11,13 +11,17 @@ namespace EWords.Editor
         [MenuItem("Tools/Remove Duplicates")]
         public static async void Remove()
         {
-            string path = Application.dataPath + "/Resources/Text/Text.txt";
+            string path = Application.dataPath + "/Resources/Text/Words.txt";
             if (File.Exists(path))
             {
                 string[] lines = await File.ReadAllLinesAsync(path);
                 string[] distinctLines = lines.Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
                 await File.WriteAllLinesAsync(path, distinctLines);
-                Debug.Log("Duplicates removed.");
+                int count = lines.Length - distinctLines.Length;
+                if (count > 0)
+                    Debug.Log($"{count} duplicate words removed.");
+                else
+                    Debug.Log("0 duplicates");
             }
             else
             {
