@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -10,11 +8,12 @@ namespace EWords
     public class LoadAndSave
     {
         const string ThemeKey = "Theme";
+        const string Path = "Text/Text";
 
         public List<string> LoadWords()
         {
             List<string> words = new();
-            TextAsset text = Resources.Load<TextAsset>("Text/Text");
+            TextAsset text = Resources.Load<TextAsset>(Path);
             if (text == null)
                 throw new FileNotFoundException("Text txt not found");
 
@@ -22,16 +21,18 @@ namespace EWords
 
             while (sr.ReadLine() is { } line)
                 words.Add(line);
-            
+
             return words.Shuffle();
         }
+        public async void SaveWords(List<string> words) => await File.WriteAllLinesAsync($"{Application.dataPath}/Resources/{Path}.txt", words);
 
-
-        public void SaveLearnedWords(string path, List<string> learnedWords)
+        public void SaveLearnedWords(string learnedWord)
         {
-            var fs = new FileStream(path + "/LearnedWords.dat", FileMode.Create);
+            var fs = new FileStream($"{Application.persistentDataPath}/LearnedWords.dat", FileMode.Create);
             var bf = new BinaryFormatter();
-            bf.Serialize(fs, learnedWords);
+            List<string> list = new();
+            list.Add(learnedWord);
+            bf.Serialize(fs, list);
             fs.Close();
         }
 
@@ -51,25 +52,17 @@ namespace EWords
         public Theme LoadThemeSettings()
         {
             var theme = Theme.Black;
-            if (PlayerPrefs.HasKey(ThemeKey))
-            {
-                var themeInSettings = PlayerPrefs.GetString(ThemeKey);
-                if (themeInSettings == Theme.Black.ToString())
-                {
-                    theme = Theme.Black;
-                }
-                else
-                {
-                    theme = Theme.White;
-                }
-            }
+            if (!PlayerPrefs.HasKey(ThemeKey))
+                return theme;
+
+            var themeInSettings = PlayerPrefs.GetString(ThemeKey);
+            theme = themeInSettings == Theme.Black.ToString()
+                ? Theme.Black
+                : Theme.White;
 
             return theme;
         }
 
-        public void SaveThemeSettings(Theme theme)
-        {
-            PlayerPrefs.SetString(ThemeKey, theme.ToString());
-        }
+        public void SaveThemeSettings(Theme theme) => PlayerPrefs.SetString(ThemeKey, theme.ToString());
     }
 }

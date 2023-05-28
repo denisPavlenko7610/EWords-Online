@@ -3,14 +3,13 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-using Task = System.Threading.Tasks.Task;
 
 namespace EWords.Editor
 {
     public class RemoveDuplicates : EditorWindow
     {
         [MenuItem("Tools/Remove Duplicates")]
-        public static async Task Remove()
+        public static async void Remove()
         {
             string path = Application.dataPath + "/Resources/Text/Text.txt";
             if (File.Exists(path))
