@@ -3,6 +3,7 @@
     public class Constants
     {
         public const string WordsListIsEmpty = "Words list is empty";
-
+        public const string API = "AIzaSyBDzFypp2m8DUJaUEjqkBxMUwFj6Rj3IVo";
+        public const string Cx = "f6f738af933044457";
     }
 }

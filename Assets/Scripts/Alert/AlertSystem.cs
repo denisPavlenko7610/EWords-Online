@@ -1,20 +1,12 @@
-﻿using RDExtensions.Extensions;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace EWords.Alert
 {
     public class AlertSystem : MonoBehaviour
     {
-        [SerializeField] GameObject alertGO;
-        AlertUI _alertUI;
-        const float DisplayDuration = 2f;
+        [SerializeField] AlertUI _alertUI;
 
-        public void Init()
-        {
-            if (!_alertUI)
-                _alertUI = Instantiate(alertGO, transform.position.WithY(transform.position.y - 210), Quaternion.identity, transform)
-                    .GetComponent<AlertUI>();
-        }
+        const float DisplayDuration = 2f;
 
         public void CreateInfoAlert(string message)
         {

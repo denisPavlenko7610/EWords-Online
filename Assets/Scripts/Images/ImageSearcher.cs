@@ -6,9 +6,51 @@ using System.Threading.Tasks;
 
 namespace EWords.Images
 {
+
     public class ImageSearcher
     {
         string _keyword;
+
+        public async Task<Sprite> LoadImageFromGoogle(string keyword)
+        {
+            _keyword = keyword;
+            string url = $"https://www.googleapis.com/customsearch/v1?q={Uri.EscapeDataString(_keyword)}&cx=" +
+                $"{Constants.Cx}&key={Constants.API}&searchType=image&imgSize=medium&fileType=png";
+
+            using UnityWebRequest www = UnityWebRequest.Get(url);
+            await www.SendWebRequest();
+
+            if (www.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("Failed to load image: " + www.error);
+                return null;
+            }
+
+            string jsonResponse = www.downloadHandler.text;
+
+            var response = JsonUtility.FromJson<GoogleImagesResponse>(jsonResponse);
+
+            if (response.items.Length > 0)
+            {
+                string imageUrl = response.items[0].link;
+
+                using UnityWebRequest imageRequest = UnityWebRequestTexture.GetTexture(imageUrl);
+                try
+                {
+                    await imageRequest.SendWebRequest();
+                    Texture2D texture = ((DownloadHandlerTexture)imageRequest.downloadHandler).texture;
+                    return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.one * 0.5f);
+                }
+                catch (Exception e)
+                {
+                    // ignored
+                }
+            }
+
+            Debug.LogWarning("No images found for the search keyword: " + _keyword);
+
+            return null;
+        }
 
         public async Task<Sprite> LoadImage(string name)
         {
@@ -22,11 +64,11 @@ namespace EWords.Images
                 Texture2D texture = new Texture2D(512, 512, TextureFormat.RGBA32, false);
                 texture.LoadImage(imageData);
                 texture.alphaIsTransparency = true;
-                
-                Sprite sprite = Sprite.Create(texture, new Rect(0,0, texture.width, texture.height), new Vector2(.5f,.5f), 100);
+
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
                 return sprite;
             }
-            
+
             Debug.Log("No image found on the page.");
             return null;
         }
@@ -40,8 +82,7 @@ namespace EWords.Images
             if (www.result == UnityWebRequest.Result.Success)
             {
                 string htmlContent = www.downloadHandler.text;
-                string imageUrl = ExtractImageLink(htmlContent);
-                return imageUrl;
+                return ExtractImageLink(htmlContent);
             }
 
             Debug.LogError($"Error loading page: {www.error}");
@@ -68,7 +109,7 @@ namespace EWords.Images
         async Task<byte[]> DownloadImage(string imageUrl)
         {
             using UnityWebRequest www = UnityWebRequest.Get(imageUrl);
-            
+
             DownloadHandlerTexture downloadHandler = new DownloadHandlerTexture(true);
             www.downloadHandler = downloadHandler;
 
@@ -83,6 +124,18 @@ namespace EWords.Images
             Debug.LogError($"Error downloading image: {www.error}");
 
             return null;
+        }
+
+        [System.Serializable]
+        private class GoogleImagesResponse
+        {
+            public ImageItem[] items;
+        }
+
+        [System.Serializable]
+        private class ImageItem
+        {
+            public string link;
         }
     }
 }

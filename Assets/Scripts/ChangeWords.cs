@@ -62,7 +62,6 @@ namespace EWords
             _loadAndSave = new LoadAndSave();
             _learnedWords = _loadAndSave.LoadLearnedWords();
             _words = _loadAndSave.LoadWords();
-            _alertSystem.Init();
             inputField.characterLimit = 22;
             RemoveLearnedWords();
             Subscribe();
@@ -116,7 +115,11 @@ namespace EWords
             
             CurrentWord = _words[randomNumber];
             mainText.text = CurrentWord;
-            Sprite image = await _imageSearcher.LoadImage(CurrentWord);
+            Sprite image = await _imageSearcher.LoadImageFromGoogle(CurrentWord);
+            
+            if(!image)
+                image = await _imageSearcher.LoadImage(CurrentWord);
+            
             if(!image)
                 return;
 
