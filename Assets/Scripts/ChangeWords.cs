@@ -60,10 +60,10 @@ namespace EWords
         {
             _translate = new Translate();
             _loadAndSave = new LoadAndSave();
-            _learnedWords = _loadAndSave.LoadLearnedWords(Application.persistentDataPath);
+            _learnedWords = _loadAndSave.LoadLearnedWords();
             _words = _loadAndSave.LoadWords();
             _alertSystem.Init();
-            inputField.characterLimit = 16;
+            inputField.characterLimit = 22;
             RemoveLearnedWords();
             Subscribe();
         }
@@ -111,6 +111,9 @@ namespace EWords
                 randomNumber = Utils.GetRandomNumber(_words);
 
             _currentNumber = randomNumber;
+            if(!IsHasWords())
+                return;
+            
             CurrentWord = _words[randomNumber];
             mainText.text = CurrentWord;
             mainImage.sprite = await _imageSearcher.LoadImage(CurrentWord);

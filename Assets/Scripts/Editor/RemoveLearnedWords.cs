@@ -7,7 +7,7 @@ namespace EWords.Editor
     public class RemoveLearnedWords : EditorWindow
     {
         [MenuItem("Tools/Remove Learned")]
-        public static async void Remove()
+        public static void Remove()
         {
             string path = $"{Application.persistentDataPath}/LearnedWords.dat";
             if (File.Exists(path))

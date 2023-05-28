@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 namespace EWords
@@ -8,14 +7,18 @@ namespace EWords
     public class LoadAndSave
     {
         const string ThemeKey = "Theme";
-        const string Path = "Text/Text";
+        const string Path = "Text/Words";
+        const string LearnedPath = "Text/LearnedWords";
 
         public List<string> LoadWords()
         {
             List<string> words = new();
             TextAsset text = Resources.Load<TextAsset>(Path);
             if (text == null)
-                throw new FileNotFoundException("Text txt not found");
+            {                
+                Debug.LogError("File not found");
+                return words;
+            }
 
             using StreamReader sr = new StreamReader(new MemoryStream(text.bytes));
 
@@ -26,26 +29,31 @@ namespace EWords
         }
         public async void SaveWords(List<string> words) => await File.WriteAllLinesAsync($"{Application.dataPath}/Resources/{Path}.txt", words);
 
-        public void SaveLearnedWords(string learnedWord)
+        public async void SaveLearnedWords(string learnedWord)
         {
-            var fs = new FileStream($"{Application.persistentDataPath}/LearnedWords.dat", FileMode.Create);
-            var bf = new BinaryFormatter();
+            if(string.IsNullOrWhiteSpace(learnedWord))
+                return;
+            
             List<string> list = new();
             list.Add(learnedWord);
-            bf.Serialize(fs, list);
-            fs.Close();
+            await File.AppendAllLinesAsync($"{Application.dataPath}/Resources/{LearnedPath}.txt", list);
         }
 
-        public List<string> LoadLearnedWords(string path)
+        public List<string> LoadLearnedWords()
         {
             List<string> learnedWords = new();
-            var pathToLearnedWords = path + "/LearnedWords.dat";
-            if (!File.Exists(pathToLearnedWords))
+            TextAsset text = Resources.Load<TextAsset>(LearnedPath);
+            if (text == null)
+            {                
+                Debug.LogError("File not found");
                 return learnedWords;
+            }
 
-            using Stream stream = File.Open(pathToLearnedWords, FileMode.Open);
-            var bformatter = new BinaryFormatter();
-            learnedWords = (List<string>)bformatter.Deserialize(stream);
+            using StreamReader sr = new StreamReader(new MemoryStream(text.bytes));
+
+            while (sr.ReadLine() is { } line)
+                learnedWords.Add(line);
+
             return learnedWords;
         }
 
