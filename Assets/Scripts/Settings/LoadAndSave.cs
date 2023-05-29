@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
 namespace EWords
@@ -29,31 +30,23 @@ namespace EWords
         }
         public async void SaveWords(List<string> words) => await File.WriteAllLinesAsync(Constants.Path, words);
 
-        public async void SaveLearnedWords(string learnedWord)
+        public void SaveLearnedWords(List<string> learnedWords)
         {
-            if(string.IsNullOrWhiteSpace(learnedWord))
-                return;
-            
-            List<string> list = new();
-            list.Add(learnedWord);
-            await File.AppendAllLinesAsync(Constants.LearnedPath, list);
+            var fs = new FileStream(Constants.LearnedPath, FileMode.Create);
+            var bf = new BinaryFormatter();
+            bf.Serialize(fs, learnedWords);
+            fs.Close();
         }
 
         public List<string> LoadLearnedWords()
         {
             List<string> learnedWords = new();
-            TextAsset text = Resources.Load<TextAsset>(LearnedPath);
-            if (text == null)
-            {                
-                Debug.LogError("File not found");
+            if (!File.Exists(Constants.LearnedPath))
                 return learnedWords;
-            }
 
-            using StreamReader sr = new StreamReader(new MemoryStream(text.bytes));
-
-            while (sr.ReadLine() is { } line)
-                learnedWords.Add(line);
-
+            using Stream stream = File.Open(Constants.LearnedPath, FileMode.Open);
+            var bformatter = new BinaryFormatter();
+            learnedWords = (List<string>)bformatter.Deserialize(stream);
             return learnedWords;
         }
 

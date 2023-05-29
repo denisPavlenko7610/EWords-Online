@@ -63,7 +63,6 @@ namespace EWords.Images
 
                 Texture2D texture = new Texture2D(512, 512, TextureFormat.RGBA32, false);
                 texture.LoadImage(imageData);
-                texture.alphaIsTransparency = true;
 
                 Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f));
                 return sprite;

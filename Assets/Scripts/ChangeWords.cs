@@ -21,9 +21,7 @@ namespace EWords
         [SerializeField] Button knowButton;
         [SerializeField] TextMeshProUGUI leftWords;
         [SerializeField] TextMeshProUGUI learnedWords;
-        [SerializeField] TMP_InputField inputField;
-        [SerializeField] Button addButton;
-        [SerializeField] AlertSystem _alertSystem;
+        [SerializeField] AlertSystem alertSystem;
 
         List<string> _words = new();
         List<string> _learnedWords = new();
@@ -39,8 +37,8 @@ namespace EWords
 
         void OnValidate()
         {
-            if (!_alertSystem)
-                _alertSystem = FindObjectOfType<AlertSystem>();
+            if (!alertSystem)
+                alertSystem = FindObjectOfType<AlertSystem>();
         }
 
         async void Start()
@@ -62,34 +60,15 @@ namespace EWords
             _loadAndSave = new LoadAndSave();
             _learnedWords = _loadAndSave.LoadLearnedWords();
             _words = _loadAndSave.LoadWords();
-            inputField.characterLimit = 22;
             RemoveLearnedWords();
             Subscribe();
-        }
-
-        public void AddWord()
-        {
-            var word = inputField.text;
-            inputField.text = String.Empty;
-            if(String.IsNullOrEmpty(word))
-                return;
-
-            if (_words.Contains(word) || _learnedWords.Contains(word))
-            {
-                _alertSystem.CreateInfoAlert("This word is already exists");
-                return;
-            }
-                
-            _words.Add(word);
-            _loadAndSave.SaveWords(_words);
-            ShowCount();
         }
 
         bool IsHasWords()
         {
             var hasWords = _words.Count > 0;
             if(!hasWords)
-                _alertSystem.CreateErrorAlert(Constants.WordsListIsEmpty);
+                alertSystem.CreateErrorAlert(Constants.WordsListIsEmpty);
 
             return hasWords;
         }
@@ -123,8 +102,15 @@ namespace EWords
             if(!image)
                 return;
 
-            mainImage.sprite = image;
-            mainImage.preserveAspect = true;
+            try
+            {
+                mainImage.sprite = image;
+                mainImage.preserveAspect = true;
+            }
+            catch (Exception e)
+            {
+               //
+            }
             
             await GetTranslatedText(CurrentWord);
         }
@@ -145,7 +131,6 @@ namespace EWords
             var removed = _words[_currentNumber];
             _words.Remove(removed);
             _loadAndSave.SaveWords(_words);
-            _loadAndSave.SaveLearnedWords(removed);
             _learnedWords.Add(removed);
             ShowCount();
             await ShowWord();
@@ -169,7 +154,6 @@ namespace EWords
         {
             learnButton.onClick.AddListener(LearnSubscribe);
             knowButton.onClick.AddListener(KnowSubscribe);
-            addButton.onClick.AddListener(AddWord);
         }
         async void LearnSubscribe() => await Learn();
 
@@ -179,11 +163,23 @@ namespace EWords
         {
             learnButton.onClick.RemoveListener(LearnSubscribe);
             knowButton.onClick.RemoveListener(KnowSubscribe);
-            addButton.onClick.RemoveListener(AddWord);
         }
 
-        void OnDisable() => Unsubscribe();
+        void OnDisable()
+        {
+            Unsubscribe();
+            _loadAndSave.SaveLearnedWords(_learnedWords);
+        }
 
-        void OnDestroy() => Unsubscribe();
+        void OnDestroy()
+        {
+            Unsubscribe();
+            _loadAndSave.SaveLearnedWords(_learnedWords);
+        }
+
+        void OnApplicationQuit()
+        {
+            _loadAndSave.SaveLearnedWords(_learnedWords);
+        }
     }
 }

@@ -8,6 +8,8 @@ namespace EWords
     {
         [SerializeField] TextMeshProUGUI mainText;
         [SerializeField] TextMeshProUGUI translatedText;
+        [SerializeField] TextMeshProUGUI leftCount;
+        [SerializeField] TextMeshProUGUI learnedCount;
         [SerializeField] Color blackColor;
         [SerializeField] Color whiteColor;
         [SerializeField] Image backgroundImage;
@@ -51,6 +53,8 @@ namespace EWords
             }
 
             translatedText.color = textColor;
+            leftCount.color = textColor;
+            learnedCount.color = textColor;
             backgroundImage.color = buttonTextColor;
             mainText.color = textColor;
         }
