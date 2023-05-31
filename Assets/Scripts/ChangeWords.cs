@@ -16,6 +16,7 @@ namespace EWords
     {
         [SerializeField] TextMeshProUGUI mainText;
         [SerializeField] TextMeshProUGUI translatedText;
+        [SerializeField] TextMeshProUGUI learnedWordExample;
         [SerializeField] Image mainImage;
         [SerializeField] Button learnButton;
         [SerializeField] Button knowButton;
@@ -93,7 +94,7 @@ namespace EWords
                 return;
             
             CurrentWord = _words[randomNumber];
-            mainText.text = CurrentWord;
+            mainText.text = CurrentWord.ToUpperFirstChar();
             Sprite image = await _imageSearcher.LoadImageFromGoogle(CurrentWord);
             
             if(!image)
@@ -111,7 +112,8 @@ namespace EWords
             {
                //
             }
-            
+
+            learnedWordExample.text = $"Learned word: {_learnedWords[Utils.GetRandomNumber(_learnedWords)].ToUpperFirstChar()}";
             await GetTranslatedText(CurrentWord);
         }
 
